@@ -3,62 +3,103 @@ jcgol.html - john conway's game of life
 author qdinar
 created 2014-3-17
 20 21 utc +4 now it makes only half step and makes that very slow
+22 12 now it makes whole step by pressing button and not slowly and but trail is left
 -->
 <canvas style="position:absolute;left:0px;top:0px;border:1px solid;"></canvas>
 <div id="f"></div>
-<input type="button" id="step"  style="position:absolute;left:290px;top:300px;" />
+<input type="button" id="step"  style="position:absolute;" />
 <script>
 cw=5;ch=5;//cell width
-ce=document.getElementsByTagName("canvas")[0];
+ce=document.getElementsByTagName("canvas")[0];//ce = canvas element
 //ce.style.width="300px";//zoom
 //ce.style.height="300px";
 lw=60;//life width
 lh=60;
 ce.width=cw*lw;
 ce.height=ch*lh;
-c=ce.getContext("2d");
+stepb=document.getElementById("step");//step button
+stepb.style.left=cw*lw+"px";
+stepb.style.top=ch*lh+"px";
+c=ce.getContext("2d");//c=context
 c.fillStyle = "#FF0000";
 c.fillRect(0,0,cw,ch);
 //imd = c.getImageData(0, 0, 1, 1).data;
 //alert([imd[0], imd[1], imd[2]]);
 ce.onmousemove=function(e){
 
+c.fillStyle = "#FF0000";
 //document.getElementById("f").innerHTML=e.clientX;
 c.fillRect(e.clientX-e.clientX%cw,e.clientY-e.clientY%ch,cw,ch);
 
 }
 
-document.getElementById("step").onclick=function(){
-for(i=0;i<lw;i++){
-	for(j=0;j<lh;j++){
+stepb.onclick=function(){
+imdo=c.getImageData(0, 0, ce.width, ce.height);
+//alert(imdo);
+//imd=imdo;
+imd=imdo.data;
+//alert(imd);
+for(i=1;i<lw;i++){
+	for(j=1;j<lh;j++){
 		ns=0;//neighbours
-		if(c.getImageData((i-1)*cw, (j-1)*ch, 1, 1).data[0]==255){ns++;}
-		if(c.getImageData((i)*cw, (j-1)*ch, 1, 1).data[0]==255){ns++;}
-		if(c.getImageData((i+1)*cw, (j-1)*ch, 1, 1).data[0]==255){ns++;}
-		if(c.getImageData((i-1)*cw, (j)*ch, 1, 1).data[0]==255){ns++;}
-		if(c.getImageData((i+1)*cw, (j)*ch, 1, 1).data[0]==255){ns++;}
-		if(c.getImageData((i-1)*cw, (j+1)*ch, 1, 1).data[0]==255){ns++;}
-		if(c.getImageData((i)*cw, (j+1)*ch, 1, 1).data[0]==255){ns++;}
-		if(c.getImageData((i+1)*cw, (j+1)*ch, 1, 1).data[0]==255){ns++;}
-		imd = c.getImageData(i*cw, j*ch, 1, 1).data;
-		if(imd[0]==255&&imd[1]==0&&imd[2]==0){
-			//c.fillStyle = "#00FF00";
-			//c.fillRect(i*cw,j*ch,cw,ch);
+		if(imd[(j-1)*ce.width*4*ch+(i-1)*cw*4]==255){ns++;}
+		if(imd[(j-1)*ce.width*4*ch+(i)*cw*4]==255){ns++;}
+		if(imd[(j-1)*ce.width*4*ch+(i+1)*cw*4]==255){ns++;}
+		if(imd[(j)*ce.width*4*ch+(i-1)*cw*4]==255){ns++;}
+		if(imd[(j)*ce.width*4*ch+(i+1)*cw*4]==255){ns++;}
+		if(imd[(j+1)*ce.width*4*ch+(i-1)*cw*4]==255){ns++;}
+		if(imd[(j+1)*ce.width*4*ch+(i)*cw*4]==255){ns++;}
+		if(imd[(j+1)*ce.width*4*ch+(i+1)*cw*4]==255){ns++;}
+		//alert(ns);
+		if(imd[(j)*ce.width*4*ch+(i)*cw*4]==255){
 			if(ns<2||ns>3){
 				c.fillStyle = "#FF00FF";
 				c.fillRect(i*cw,j*ch,cw,ch);
+				//imd[(j)*ce.width*4*ch+(i)*cw*4+2]=255;
+				/*
+				for(i2=0;i2<cw;i2++){for(j2=0;j2<ch;j2++){
+					imd[ce.width*4*(j*ch+j2)+(i*cw+i2)*4+0]=0;
+					imd[ce.width*4*(j*ch+j2)+(i*cw+i2)*4+1]=255;
+					imd[ce.width*4*(j*ch+j2)+(i*cw+i2)*4+2]=0;
+				}}
+				*/
 			}
-		//}else if(imd[0]==0&&imd[1]==0&&imd[2]==0){
 		}else{
-			//c.fillStyle = "#0000FF";
-			//c.fillRect(i*cw,j*ch,cw,ch);
 			if(ns==3){
+				//alert(ns);
 				c.fillStyle = "#FFFF00";
+				//c.fillStyle = "#0000FF";
 				c.fillRect(i*cw,j*ch,cw,ch);
+				//imd[(j)*ce.width*4*ch+(i)*cw*4+1]=255;
+				/*
+				//this does not work, i do not know why
+				for(i2=0;i2<cw;i2++){for(j2=0;j2<ch;j2++){
+					imd[ce.width*4*(j*ch+j2)+(i*cw+i2)*4+0]=0;
+					imd[ce.width*4*(j*ch+j2)+(i*cw+i2)*4+1]=0;
+					imd[ce.width*4*(j*ch+j2)+(i*cw+i2)*4+2]=255;
+				}}
+				*/
 			}
 		}
 	}
 }
+//alert('1');
+//c.putImageData(imdo, 0, 0);
+
+imdo=c.getImageData(0, 0, ce.width, ce.height);
+imd=imdo.data;
+for(i=1;i<lw;i++){
+	for(j=1;j<lh;j++){
+		if(imd[(j)*ce.width*4*ch+(i)*cw*4+2]==255){
+			c.fillStyle = "#000000";
+			c.fillRect(i*cw,j*ch,cw,ch);
+		}else if(imd[(j)*ce.width*4*ch+(i)*cw*4+1]==255){
+			c.fillStyle = "#FF0000";
+			c.fillRect(i*cw,j*ch,cw,ch);
+		}
+	}
+}
+
 
 
 
