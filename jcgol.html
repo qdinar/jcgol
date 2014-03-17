@@ -1,0 +1,68 @@
+<!--
+jcgol.html - john conway's game of life
+author qdinar
+created 2014-3-17
+20 21 utc +4 now it makes only half step and makes that very slow
+-->
+<canvas style="position:absolute;left:0px;top:0px;border:1px solid;"></canvas>
+<div id="f"></div>
+<input type="button" id="step"  style="position:absolute;left:290px;top:300px;" />
+<script>
+cw=5;ch=5;//cell width
+ce=document.getElementsByTagName("canvas")[0];
+//ce.style.width="300px";//zoom
+//ce.style.height="300px";
+lw=60;//life width
+lh=60;
+ce.width=cw*lw;
+ce.height=ch*lh;
+c=ce.getContext("2d");
+c.fillStyle = "#FF0000";
+c.fillRect(0,0,cw,ch);
+//imd = c.getImageData(0, 0, 1, 1).data;
+//alert([imd[0], imd[1], imd[2]]);
+ce.onmousemove=function(e){
+
+//document.getElementById("f").innerHTML=e.clientX;
+c.fillRect(e.clientX-e.clientX%cw,e.clientY-e.clientY%ch,cw,ch);
+
+}
+
+document.getElementById("step").onclick=function(){
+for(i=0;i<lw;i++){
+	for(j=0;j<lh;j++){
+		ns=0;//neighbours
+		if(c.getImageData((i-1)*cw, (j-1)*ch, 1, 1).data[0]==255){ns++;}
+		if(c.getImageData((i)*cw, (j-1)*ch, 1, 1).data[0]==255){ns++;}
+		if(c.getImageData((i+1)*cw, (j-1)*ch, 1, 1).data[0]==255){ns++;}
+		if(c.getImageData((i-1)*cw, (j)*ch, 1, 1).data[0]==255){ns++;}
+		if(c.getImageData((i+1)*cw, (j)*ch, 1, 1).data[0]==255){ns++;}
+		if(c.getImageData((i-1)*cw, (j+1)*ch, 1, 1).data[0]==255){ns++;}
+		if(c.getImageData((i)*cw, (j+1)*ch, 1, 1).data[0]==255){ns++;}
+		if(c.getImageData((i+1)*cw, (j+1)*ch, 1, 1).data[0]==255){ns++;}
+		imd = c.getImageData(i*cw, j*ch, 1, 1).data;
+		if(imd[0]==255&&imd[1]==0&&imd[2]==0){
+			//c.fillStyle = "#00FF00";
+			//c.fillRect(i*cw,j*ch,cw,ch);
+			if(ns<2||ns>3){
+				c.fillStyle = "#FF00FF";
+				c.fillRect(i*cw,j*ch,cw,ch);
+			}
+		//}else if(imd[0]==0&&imd[1]==0&&imd[2]==0){
+		}else{
+			//c.fillStyle = "#0000FF";
+			//c.fillRect(i*cw,j*ch,cw,ch);
+			if(ns==3){
+				c.fillStyle = "#FFFF00";
+				c.fillRect(i*cw,j*ch,cw,ch);
+			}
+		}
+	}
+}
+
+
+
+}
+
+
+</script>
