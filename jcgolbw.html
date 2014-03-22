@@ -1,0 +1,540 @@
+<!--
+jcgol.html - john conway's game of life
+author qdinar
+created 2014-3-17
+20 21 utc +4 now it makes only half step and makes that very slow
+22 12 now it makes whole step by pressing button and not slowly and but trail is left
+-->
+<canvas style="position:absolute;left:0px;top:0px;border:1px solid;"></canvas>
+<div id="f"></div>
+<input type="button" id="stepbw"  style="position:absolute;" value="bw" />
+<input type="button" id="step"  style="position:absolute;" />
+<script>
+cw=5;ch=5;//cell width
+ce=document.getElementsByTagName("canvas")[0];//ce = canvas element
+lw=60;//life width
+lh=60;
+ce.width=cw*lw;
+ce.height=ch*lh;
+stepb=document.getElementById("step");//step button
+stepb.style.left=cw*lw+"px";
+stepb.style.top=ch*lh+"px";
+stepbwb=document.getElementById("stepbw");//step back ward button
+stepbwb.style.left=(cw*lw - 30 )+"px";
+stepbwb.style.top=ch*lh+"px";
+c=ce.getContext("2d");//c=context
+c.fillStyle = "#FF0000";
+c.fillRect(0,0,cw,ch);
+c.fillRect(59*cw,59*ch,cw,ch);
+
+
+ce.onmousemove=function(e){
+
+c.fillStyle = "#FF0000";
+//document.getElementById("f").innerHTML=e.clientX;
+c.fillRect(e.clientX-e.clientX%cw,e.clientY-e.clientY%ch,cw,ch);
+
+}
+
+stepbwb.onclick=function(){
+imdo=c.getImageData(0, 0, ce.width, ce.height);
+imd=imdo.data;
+//i want to make it backward
+//if cell is set and ns will be! 3 it may! be deleted
+//if cell is not set and ns will be! <2 or >3 it may! be set
+for(j=0;j<lh;j++){
+	for(i=0;i<lw;i++){
+		
+		ns=0;//future neighbours
+		if(j>0&&i>0&&imd[(j-1)*ce.width*4*ch+(i-1)*cw*4]==255){ns++;}
+		if(j>0&&imd[(j-1)*ce.width*4*ch+(i)*cw*4]==255){ns++;}
+		if(j>0&&i<lw-1&&imd[(j-1)*ce.width*4*ch+(i+1)*cw*4]==255){ns++;}
+		if(i>0&&imd[(j)*ce.width*4*ch+(i-1)*cw*4]==255){ns++;}
+		if(i<lw&&imd[(j)*ce.width*4*ch+(i+1)*cw*4]==255){ns++;}
+		if(j<lh-1&&i>0&&imd[(j+1)*ce.width*4*ch+(i-1)*cw*4]==255){ns++;}
+		if(j<lh&&imd[(j+1)*ce.width*4*ch+(i)*cw*4]==255){ns++;}
+		if(j<lh-1&&i<lw-1&&imd[(j+1)*ce.width*4*ch+(i+1)*cw*4]==255){ns++;}
+		
+		if(imd[(j)*ce.width*4*ch+(i)*cw*4]==255&&imd[(j)*ce.width*4*ch+(i)*cw*4+2]==0&&imd[(j)*ce.width*4*ch+(i)*cw*4+1]==0){
+		//if is set and not set to be deleted or to be saved
+			//i will try to make 3 neighbours
+			if(ns>3){
+				//already more than 3 n-s are set to be set, that is not possible
+				alert('stopped set ns='+ns+" i="+i+" j="+j);
+				return;
+			}else if(ns<2){
+				/*
+				if(j==1){
+					//alert('ok');
+					//i try to make 2 neighbours and then save this
+					howmanytoset=2-ns;
+					//for(i2=-1;i2<=+1;i2++){
+					for(j2=-1,i2=1;j2<=+1;j2++){
+					//if(!(i2==0&&j2==0)){
+						if(howmanytoset>0
+						//&&imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4+2]==0
+						//&&imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4+1]==0
+						){
+							c.fillStyle = "rgb("+imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4]+",255,0)";
+							c.fillRect((i+i2)*cw,(j+j2)*ch,cw,ch);
+							howmanytoset--;
+						}
+					//}
+					}
+					//}
+					if(howmanytoset==0){
+						//ok, n-s are 2 now
+						c.fillStyle = "#FFFF00";
+						c.fillRect((i)*cw,(j)*ch,cw,ch);
+					}else{
+						//will be 0 or 1 n. and this is set now. impossible
+						alert('stopped set ns='+ns+" i="+i+" j="+j);
+					}
+				}else{
+					//i try to make 2 neighbours and then save this
+					if(ns==1){
+						//c.fillStyle = "#FFFF00";
+						c.fillStyle = "rgb("+imd[(j+1)*ce.width*4*ch+(i+1)*cw*4]+",255,0)";
+						c.fillRect((i+1)*cw,(j+1)*ch,cw,ch);//күрше
+						c.fillRect((i)*cw,(j)*ch,cw,ch);//үзе
+					}else{//ns==0
+						//alert('stopped set ns='+ns+" i="+i+" j="+j);
+						//return;
+						c.fillStyle = "rgb("+imd[(j+1)*ce.width*4*ch+(i+1)*cw*4]+",255,0)";
+						c.fillRect((i+1)*cw,(j+1)*ch,cw,ch);//күрше
+						c.fillRect((i)*cw,(j)*ch,cw,ch);//үзе
+						c.fillRect((i)*cw,(j+1)*ch,cw,ch);//күрше
+						i=i-2;
+					}
+				}
+				*/
+				//i try to make 2 neighbours and then save this
+				//after setting neighbours i should go back to recount neighbours
+				howmanytoset=2-ns;
+				for(i2=-1;i2<=+1;i2++){
+				for(j2=-1;j2<=+1;j2++){
+				//if(i==59&&j==59){alert([i2,j2]);}
+				if(!(i2==0&&j2==0)){
+					if(howmanytoset>0
+					//&&imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4+2]==0
+					//&&imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4+1]==0
+					&&(i+i2)>=0&&(i+i2)<=lw-1&&(j+j2)>=0&&(j+j2)<=lh-1
+					){
+						c.fillStyle = "rgb("+imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4]+",255,0)";
+						c.fillRect((i+i2)*cw,(j+j2)*ch,cw,ch);
+						howmanytoset--;
+					}
+				}
+				}
+				}
+				if(howmanytoset==0){
+					//ok, n-s are 2 now
+					c.fillStyle = "#FFFF00";
+					c.fillRect((i)*cw,(j)*ch,cw,ch);
+					//go back
+					go=confirm('going back, set, ns='+ns+" i="+i+" j="+j);
+					if(go){
+						if(i>=3&&j>=3){
+							j=j-3;i=i-3;
+						}else{
+							j=0;i=0;
+						}
+						imdo=c.getImageData(0, 0, ce.width, ce.height);
+						imd=imdo.data;
+					}else{
+						return;
+					}
+				}else{
+					//will be 0 or 1 n. and this is set now. impossible
+					alert('stopped set ns='+ns+" i="+i+" j="+j+" howmanytoset="+howmanytoset);
+					return;
+				}
+			}else if(ns==3){
+				//alert('set ns='+ns+" i="+i+" j="+j+" howmanytoset="+howmanytoset);
+				//i will try to save this one, but can also delete it
+				c.fillStyle = "#FFFF00";
+				c.fillRect((i)*cw,(j)*ch,cw,ch);
+			}else{//ns==2
+				//alert('set ns='+ns+" i="+i+" j="+j+" howmanytoset="+howmanytoset);
+				//this must be set to be saved
+				//or i can add n-s to 3 and then can delete this
+				//i cannot go back and make <2 or >3 n-s
+				c.fillStyle = "#FFFF00";
+				c.fillRect((i)*cw,(j)*ch,cw,ch);
+			}
+		}else if(imd[(j)*ce.width*4*ch+(i)*cw*4]==0&&imd[(j)*ce.width*4*ch+(i)*cw*4+2]==0&&imd[(j)*ce.width*4*ch+(i)*cw*4+1]==0){
+		//if is not set and not set to be deleted or to be saved
+			//i will try to make more than 3 neighbours
+			if(ns<2){
+				//less than 2 n-s set to be set, this is not set, it is normal, this one can be set to be set, can be left empty
+				c.fillStyle = "#FFFF00";
+				c.fillRect((i)*cw,(j)*ch,cw,ch);				
+			}else if(ns>3){
+				//more than 3 n-s set to be set, this is not set, it is normal, this one can be set to be set, can be left empty
+				c.fillStyle = "#FFFF00";
+				c.fillRect((i)*cw,(j)*ch,cw,ch);
+			}else if(ns==3){
+				/*
+				//this is not set but 3 n-s are set to be set. this is impossible. i should try to add a neighbour
+				howmanytoset=1;
+				for(i2=-1;i2<=+1;i2++){for(j2=-1;j2<=+1;j2++){if(!(i2==0&&j2==0)){
+					if(howmanytoset>0&&imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4+2]==0
+					&&imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4+1]==0){
+						c.fillStyle = "#FFFF00";
+						c.fillRect((i+i2)*cw,(j+j2)*ch,cw,ch);
+						howmanytoset--;
+					}
+				}}}
+				if(howmanytoset==0){
+					//ok, n-s are 3+1 now
+					//can be set or empty
+				}else{
+					//will be 3 n. and this is not set now. impossible
+					alert('stopped');
+				}
+				*/
+				//this is not set but 3 n-s are set to be set. this is impossible. i should try to add a neighbour
+				//c.fillStyle = "#FFFF00";
+				c.fillStyle = "rgb("+imd[(j+1)*ce.width*4*ch+(i+1)*cw*4]+",255,0)";
+				c.fillRect((i+1)*cw,(j+1)*ch,cw,ch);
+			}else{//ns=2
+				//this is not set but 2 ns-s are set to be set.
+				//this one can be left empty
+				//or i can try to make >3 or <2 n-s
+				//i cannot make 3 n-s
+				c.fillStyle = "#FF00FF";
+				c.fillRect((i)*cw,(j)*ch,cw,ch);
+			}
+		}else if(imd[(j)*ce.width*4*ch+(i)*cw*4]==0&&imd[(j)*ce.width*4*ch+(i)*cw*4+1]==255){
+			//it is not set but set to be set
+			//it "was" deleted so it should not have 2 or 3 future n-s
+			if(ns==2){
+				//just set it to be unset
+				c.fillStyle = "#0000FF";
+				c.fillRect((i)*cw,(j)*ch,cw,ch);
+			}else if(ns==3){
+				//try to add a f neighbour
+				//i think may be i will not continue this and will make recursion in new file
+				//i have continued to code this and i see that it does not work ) it fills many cells...
+				howmanytoset=1;
+				for(i2=-1;i2<=+1;i2++){
+				for(j2=-1;j2<=+1;j2++){
+				//if(i==59&&j==59){alert([i2,j2]);}
+				if(!(i2==0&&j2==0)){
+					if(
+					howmanytoset>0
+					//&&imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4+2]==0
+					//&&imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4+1]==0
+					&&(i+i2)>=0&&(i+i2)<=lw-1&&(j+j2)>=0&&(j+j2)<=lh-1
+					){
+						c.fillStyle = "rgb("+imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4]+",255,0)";
+						c.fillRect((i+i2)*cw,(j+j2)*ch,cw,ch);
+						howmanytoset--;						
+					}
+				}
+				}
+				}
+				if(howmanytoset==0){
+					//ok, n-s are 3+1 now
+					//can be set or empty
+					c.fillStyle = "#0000FF";
+					c.fillRect((i)*cw,(j)*ch,cw,ch);
+					go=confirm('going back, set, ns='+ns+" i="+i+" j="+j);
+					if(go){
+						if(i>=3&&j>=3){
+							j=j-3;i=i-3;
+						}else{
+							j=0;i=0;
+						}
+						imdo=c.getImageData(0, 0, ce.width, ce.height);
+						imd=imdo.data;
+					}else{
+						return;
+					}
+				}else{
+					//will be 3 n. and this is not set now. impossible
+					alert('stopped');
+				}
+			}
+		}else if(imd[(j)*ce.width*4*ch+(i)*cw*4]==255&&imd[(j)*ce.width*4*ch+(i)*cw*4+1]==255){
+			//it is set and set to be set
+			//it was "saved" so it should have 2 or 3 f. n-s
+			if(ns<2){
+				howmanytoset=2-ns;
+				for(i2=-1;i2<=+1;i2++){
+				for(j2=-1;j2<=+1;j2++){
+				//if(i==59&&j==59){alert([i2,j2]);}
+				if(!(i2==0&&j2==0)){
+					if(
+					howmanytoset>0
+					//&&imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4+2]==0
+					//&&imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4+1]==0
+					&&(i+i2)>=0&&(i+i2)<=lw-1&&(j+j2)>=0&&(j+j2)<=lh-1
+					){
+						c.fillStyle = "rgb("+imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4]+",255,0)";
+						c.fillRect((i+i2)*cw,(j+j2)*ch,cw,ch);
+						howmanytoset--;						
+					}
+				}
+				}
+				}
+				if(howmanytoset==0){
+					//ok, n-s are 2 now
+					go=confirm('going back, set, ns='+ns+" i="+i+" j="+j);
+					if(go){
+						if(i>=3&&j>=3){
+							j=j-3;i=i-3;
+						}else{
+							j=0;i=0;
+						}
+						imdo=c.getImageData(0, 0, ce.width, ce.height);
+						imd=imdo.data;
+					}else{
+						return;
+					}
+				}else{
+					alert('stopped');
+				}
+			}else if(ns>3){
+				howmanytodel=ns-3;
+				for(i2=-1;i2<=+1;i2++){
+				for(j2=-1;j2<=+1;j2++){
+				//if(i==59&&j==59){alert([i2,j2]);}
+				if(!(i2==0&&j2==0)){
+					if(
+					howmanytodel>0
+					//&&imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4+2]==0
+					//&&imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4+1]==0
+					&&(i+i2)>=0&&(i+i2)<=lw-1&&(j+j2)>=0&&(j+j2)<=lh-1
+					){
+						c.fillStyle = "rgb("+imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4]+",255,0)";
+						c.fillRect((i+i2)*cw,(j+j2)*ch,cw,ch);
+						howmanytodel--;						
+					}
+				}
+				}
+				}
+				if(howmanytodel==0){
+					//ok, n-s are 2 now
+					go=confirm('going back, set, ns='+ns+" i="+i+" j="+j);
+					if(go){
+						if(i>=3&&j>=3){
+							j=j-3;i=i-3;
+						}else{
+							j=0;i=0;
+						}
+						imdo=c.getImageData(0, 0, ce.width, ce.height);
+						imd=imdo.data;
+					}else{
+						return;
+					}
+				}else{
+					alert('stopped');
+				}
+			}else{
+			//ok, nothing to do
+			}
+		}else if(imd[(j)*ce.width*4*ch+(i)*cw*4]==0&&imd[(j)*ce.width*4*ch+(i)*cw*4+2]==255){
+			//it is not set and will be left unset
+			//so it sh not have 3 f n-s
+			if(ns==3){
+				howmanytodel=ns-3;
+				for(i2=-1;i2<=+1;i2++){
+				for(j2=-1;j2<=+1;j2++){
+				//if(i==59&&j==59){alert([i2,j2]);}
+				if(!(i2==0&&j2==0)){
+					if(
+					howmanytodel>0
+					//&&imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4+2]==0
+					//&&imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4+1]==0
+					&&(i+i2)>=0&&(i+i2)<=lw-1&&(j+j2)>=0&&(j+j2)<=lh-1
+					){
+						c.fillStyle = "rgb("+imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4]+",255,0)";
+						c.fillRect((i+i2)*cw,(j+j2)*ch,cw,ch);
+						howmanytodel--;						
+					}
+				}
+				}
+				}
+				if(howmanytodel==0){
+					//ok, n-s are 2 now
+					go=confirm('going back, set, ns='+ns+" i="+i+" j="+j);
+					if(go){
+						if(i>=3&&j>=3){
+							j=j-3;i=i-3;
+						}else{
+							j=0;i=0;
+						}
+						imdo=c.getImageData(0, 0, ce.width, ce.height);
+						imd=imdo.data;
+					}else{
+						return;
+					}
+				}else{
+					alert('stopped');
+				}
+			}else{
+				//ok
+			}
+		}else if(imd[(j)*ce.width*4*ch+(i)*cw*4]==255&&imd[(j)*ce.width*4*ch+(i)*cw*4+2]==255){
+			//it is set and will be unset
+			//it sh have 3 f n-s
+			if(ns!=3){
+				howmanytodel=ns-3;
+				for(i2=-1;i2<=+1;i2++){
+				for(j2=-1;j2<=+1;j2++){
+				//if(i==59&&j==59){alert([i2,j2]);}
+				if(!(i2==0&&j2==0)){
+					if(
+					howmanytodel>0
+					//&&imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4+2]==0
+					//&&imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4+1]==0
+					&&(i+i2)>=0&&(i+i2)<=lw-1&&(j+j2)>=0&&(j+j2)<=lh-1
+					){
+						c.fillStyle = "rgb("+imd[(j+j2)*ce.width*4*ch+(i+i2)*cw*4]+",255,0)";
+						c.fillRect((i+i2)*cw,(j+j2)*ch,cw,ch);
+						howmanytodel--;						
+					}
+				}
+				}
+				}
+				if(howmanytodel==0){
+					//ok, n-s are 2 now
+					go=confirm('going back, set, ns='+ns+" i="+i+" j="+j);
+					if(go){
+						if(i>=3&&j>=3){
+							j=j-3;i=i-3;
+						}else{
+							j=0;i=0;
+						}
+						imdo=c.getImageData(0, 0, ce.width, ce.height);
+						imd=imdo.data;
+					}else{
+						return;
+					}
+				}else{
+					alert('stopped');
+				}
+			}else{
+				//ok
+			}
+		}
+		//else
+		//if this one is already set to be set or deleted, i do not touch this
+	}
+}
+
+imdo=c.getImageData(0, 0, ce.width, ce.height);
+imd=imdo.data;
+for(i=0;i<lw;i++){
+	for(j=0;j<lh;j++){
+		if(imd[(j)*ce.width*4*ch+(i)*cw*4+2]==255){
+			c.fillStyle = "#000000";
+			c.fillRect(i*cw,j*ch,cw,ch);
+		}else if(imd[(j)*ce.width*4*ch+(i)*cw*4+1]==255){
+			c.fillStyle = "#FF0000";
+			c.fillRect(i*cw,j*ch,cw,ch);
+		}
+	}
+}
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+stepb.onclick=function(){
+imdo=c.getImageData(0, 0, ce.width, ce.height);
+//alert(imdo);
+//imd=imdo;
+imd=imdo.data;
+//alert(imd);
+for(i=0;i<lw;i++){
+	for(j=0;j<lh;j++){
+		ns=0;//neighbours
+		if(j>0&&i>0&&imd[(j-1)*ce.width*4*ch+(i-1)*cw*4]==255){ns++;}
+		if(j>0&&imd[(j-1)*ce.width*4*ch+(i)*cw*4]==255){ns++;}
+		if(j>0&&i<lw-1&&imd[(j-1)*ce.width*4*ch+(i+1)*cw*4]==255){ns++;}
+		if(i>0&&imd[(j)*ce.width*4*ch+(i-1)*cw*4]==255){ns++;}
+		if(i<lw&&imd[(j)*ce.width*4*ch+(i+1)*cw*4]==255){ns++;}
+		if(j<lh-1&&i>0&&imd[(j+1)*ce.width*4*ch+(i-1)*cw*4]==255){ns++;}
+		if(j<lh&&imd[(j+1)*ce.width*4*ch+(i)*cw*4]==255){ns++;}
+		if(j<lh-1&&i<lw-1&&imd[(j+1)*ce.width*4*ch+(i+1)*cw*4]==255){ns++;}
+		//if(i==1&&j==0){alert(ns);}
+		//alert(ns);
+		if(imd[(j)*ce.width*4*ch+(i)*cw*4]==255){
+			if(ns<2||ns>3){
+				c.fillStyle = "#FF00FF";
+				c.fillRect(i*cw,j*ch,cw,ch);
+				//imd[(j)*ce.width*4*ch+(i)*cw*4+2]=255;
+				/*
+				for(i2=0;i2<cw;i2++){for(j2=0;j2<ch;j2++){
+					imd[ce.width*4*(j*ch+j2)+(i*cw+i2)*4+0]=0;
+					imd[ce.width*4*(j*ch+j2)+(i*cw+i2)*4+1]=255;
+					imd[ce.width*4*(j*ch+j2)+(i*cw+i2)*4+2]=0;
+				}}
+				*/
+			}
+		}else{
+			if(ns==3){
+				//alert(ns);
+				c.fillStyle = "#00FF00";
+				//c.fillStyle = "#0000FF";
+				c.fillRect(i*cw,j*ch,cw,ch);
+				//imd[(j)*ce.width*4*ch+(i)*cw*4+1]=255;
+				/*
+				//this does not work, i do not know why
+				for(i2=0;i2<cw;i2++){for(j2=0;j2<ch;j2++){
+					imd[ce.width*4*(j*ch+j2)+(i*cw+i2)*4+0]=0;
+					imd[ce.width*4*(j*ch+j2)+(i*cw+i2)*4+1]=0;
+					imd[ce.width*4*(j*ch+j2)+(i*cw+i2)*4+2]=255;
+				}}
+				*/
+			}
+		}
+	}
+}
+//alert('1');
+//c.putImageData(imdo, 0, 0);
+//alert('ok');
+
+imdo=c.getImageData(0, 0, ce.width, ce.height);
+imd=imdo.data;
+for(i=0;i<lw;i++){
+	for(j=0;j<lh;j++){
+		if(imd[(j)*ce.width*4*ch+(i)*cw*4+2]==255){
+			c.fillStyle = "#000000";
+			c.fillRect(i*cw,j*ch,cw,ch);
+		}else if(imd[(j)*ce.width*4*ch+(i)*cw*4+1]==255){
+			c.fillStyle = "#FF0000";
+			c.fillRect(i*cw,j*ch,cw,ch);
+			//if(i==0){alert('!');}
+		}
+	}
+}
+
+
+
+
+}
+
+
+
+
+
+
+</script>

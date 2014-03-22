@@ -42,14 +42,14 @@ imd=imdo.data;
 for(i=1;i<lw;i++){
 	for(j=1;j<lh;j++){
 		ns=0;//neighbours
-		if(imd[(j-1)*ce.width*4*ch+(i-1)*cw*4]==255){ns++;}
-		if(imd[(j-1)*ce.width*4*ch+(i)*cw*4]==255){ns++;}
-		if(imd[(j-1)*ce.width*4*ch+(i+1)*cw*4]==255){ns++;}
-		if(imd[(j)*ce.width*4*ch+(i-1)*cw*4]==255){ns++;}
-		if(imd[(j)*ce.width*4*ch+(i+1)*cw*4]==255){ns++;}
-		if(imd[(j+1)*ce.width*4*ch+(i-1)*cw*4]==255){ns++;}
-		if(imd[(j+1)*ce.width*4*ch+(i)*cw*4]==255){ns++;}
-		if(imd[(j+1)*ce.width*4*ch+(i+1)*cw*4]==255){ns++;}
+		if(j>0&&i>0&&imd[(j-1)*ce.width*4*ch+(i-1)*cw*4]==255){ns++;}
+		if(j>0&&imd[(j-1)*ce.width*4*ch+(i)*cw*4]==255){ns++;}
+		if(j>0&&i<lw-1&&imd[(j-1)*ce.width*4*ch+(i+1)*cw*4]==255){ns++;}
+		if(i>0&&imd[(j)*ce.width*4*ch+(i-1)*cw*4]==255){ns++;}
+		if(i<lw&&imd[(j)*ce.width*4*ch+(i+1)*cw*4]==255){ns++;}
+		if(j<lh-1&&i>0&&imd[(j+1)*ce.width*4*ch+(i-1)*cw*4]==255){ns++;}
+		if(j<lh&&imd[(j+1)*ce.width*4*ch+(i)*cw*4]==255){ns++;}
+		if(j<lh-1&&i<lw-1&&imd[(j+1)*ce.width*4*ch+(i+1)*cw*4]==255){ns++;}
 		//alert(ns);
 		if(imd[(j)*ce.width*4*ch+(i)*cw*4]==255){
 			if(ns<2||ns>3){
